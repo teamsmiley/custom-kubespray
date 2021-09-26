@@ -1,6 +1,5 @@
 KUBESPRAY_VERSION=2.17.0
-ENV=xgrid-c3
-KUBE_VERSION=v1.21.5
+ENV=xgrid
 
 BASE_DIR=deploy
 TARGET_DIR=${BASE_DIR}/kubespray-$KUBESPRAY_VERSION
@@ -46,7 +45,6 @@ cat config/cluster.yml >> ${TARGET_DIR}/cluster.yml
 
 cat config/$ENV/group_vars/k8s_cluster/k8s-cluster.yml >> ${TARGET_DIR}/inventory/$ENV/group_vars/k8s_cluster/k8s-cluster.yml
 cat config/$ENV/group_vars/all/all.yml >> ${TARGET_DIR}/inventory/$ENV/group_vars/all/all.yml
-
 
 cp -r add-on/ ${TARGET_DIR}/
 

@@ -1,0 +1,56 @@
+global
+  maxconn                 4000
+  log                     127.0.0.1 local0
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+
+defaults
+  mode                    http
+  log                     global
+  option                  httplog
+  option                  dontlognull
+  option                  http-server-close
+  option                  redispatch
+  retries                 5
+  timeout http-request    5m
+  timeout queue           5m
+  timeout connect         5m
+  timeout client          5m
+  timeout server          5m
+  timeout http-keep-alive 5m
+  timeout check           5m
+  maxconn                 4000
+
+frontend stats
+  bind *:8404
+  stats enable
+  stats uri /stats
+  stats refresh 10s
+  stats admin if LOCALHOST
+
+{% if loadbalancer_apiserver_healthcheck_port is defined -%}
+frontend healthz
+  bind *:{{ loadbalancer_apiserver_healthcheck_port }}
+  mode http
+  monitor-uri /healthz
+{% endif %}
+
+frontend kube_api_frontend
+  bind *:{{ loadbalancer_apiserver['port']|default(kube_apiserver_port) }}
+  mode tcp
+  option tcplog
+  default_backend kube_api_backend
+
+backend kube_api_backend
+  mode tcp
+  balance leastconn
+  default-server inter 15s downinter 15s rise 2 fall 2 slowstart 60s maxconn 1000 maxqueue 256 weight 100
+  option httpchk GET /healthz
+  http-check expect status 200
+  {% for host in groups['kube-master'] -%}
+  server {{ host }} {{ hostvars[host]['ip'] | default(hostvars[host]['ansible_host']) }}:{{ kube_apiserver_port }} check check-ssl verify none
+  {% endfor -%}

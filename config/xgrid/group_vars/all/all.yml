@@ -1,0 +1,4 @@
+apiserver_loadbalancer_domain_name: "api.k8s.xgridcolo.com"
+loadbalancer_apiserver:
+  address: 172.16.3.10
+  port: 443

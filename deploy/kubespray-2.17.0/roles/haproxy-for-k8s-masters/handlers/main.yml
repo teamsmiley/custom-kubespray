@@ -1,0 +1,9 @@
+---
+- name: restart haproxy
+  systemd:
+    name: haproxy
+    state: restarted
+- name: restart keepalived
+  systemd:
+    name: snap.keepalived.daemon.service
+    state: restarted

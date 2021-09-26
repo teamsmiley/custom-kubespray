@@ -1,0 +1,26 @@
+---
+- name: Install haproxy package
+  become: true
+  package:
+    name: haproxy
+    state: present
+
+- name: Configure haproxy
+  template:
+    src: haproxy.cfg.j2
+    dest: "{{ haproxy_config_file_path }}"
+  notify:
+    - restart haproxy
+
+- name: Install keepalived latest packages
+  become: true
+  snap:
+    name: keepalived
+    classic: yes
+
+- name: Configure keepalived
+  template:
+    src: keepalived.conf.j2
+    dest: "{{ keepalived_config_file_path }}"
+  notify:
+    - restart keepalived
