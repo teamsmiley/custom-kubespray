@@ -1,0 +1,4 @@
+apiserver_loadbalancer_domain_name: "api.c4"
+loadbalancer_apiserver:
+  address: 172.16.4.10
+  port: 443

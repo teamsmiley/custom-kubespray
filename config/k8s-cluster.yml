@@ -1,0 +1,5 @@
+# Set the drain timeout for pre-upgrade
+drain_grace_period: 600
+drain_timeout: 600s
+
+kube_version: v1.21.5
